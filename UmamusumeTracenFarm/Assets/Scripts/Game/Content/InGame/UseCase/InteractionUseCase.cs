@@ -12,12 +12,14 @@ namespace Game.Content.InGame.UseCase
         private bool _interact;
         private IProp _lastProp;
         private readonly FarmStore _farmStore;
+        private readonly FarmWorkUseCase _farmWorkUseCase;
 
-        public InteractionUseCase(Camera camera, ActorStore actorStore, FarmStore farmStore)
+        public InteractionUseCase(Camera camera, ActorStore actorStore, FarmStore farmStore, FarmWorkUseCase farmWorkUseCase)
         {
             _camera = camera;
             _actorStore = actorStore;
             _farmStore = farmStore;
+            _farmWorkUseCase = farmWorkUseCase;
         }
 
         public void UpdateGesture(HoldGesturePayload holdGesturePayload)
@@ -58,16 +60,9 @@ namespace Game.Content.InGame.UseCase
 
         private void CheckAndInteract(IProp prop)
         {
-            const int availableCount = 1;
-
-            //TODO : 타입에 따른 Store를 따로 해야한다 ->Prop에 타입이 있어야 한다
             var entry = _farmStore.Get(prop.Id);
             _lastProp = prop;
-
-            if (entry.WorkingCount <= availableCount)
-            {
-                entry.WorkingCount++;
-            }
+            _farmWorkUseCase.StartInteracting(entry.Id, _actorStore.MyActor.Id);
         }
 
         private void StopInteract(IProp prop)
@@ -78,7 +73,7 @@ namespace Game.Content.InGame.UseCase
             }
 
             var entry = _farmStore.Get(prop.Id);
-            entry.WorkingCount = Mathf.Max(0, entry.WorkingCount - 1);
+            _farmWorkUseCase.StopInteracting(entry.Id, _actorStore.MyActor.Id);
         }
 
         private GameObject GetGameObject(Vector2 screenPosition)

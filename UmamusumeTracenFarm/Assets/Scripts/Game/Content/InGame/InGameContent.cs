@@ -1,9 +1,11 @@
 ﻿using Game.Character;
 using Game.Content.InGame.UseCase;
+using Game.Service.Farm;
 using VContainer;
 using VContainer.Unity;
 using Game.Service.Gesture;
 using UnityEngine;
+using VitalRouter.VContainer;
 
 namespace Game.Content.InGame
 {
@@ -21,6 +23,7 @@ namespace Game.Content.InGame
             builder.Register<FarmStore>(Lifetime.Singleton);
             builder.Register<ActorStore>(Lifetime.Singleton);
             builder.Register<ClickGesture>(Lifetime.Singleton);
+            builder.Register<FarmWorkUseCase>(Lifetime.Singleton);
             builder.Register<InteractionUseCase>(Lifetime.Singleton);
             builder.Register<FarmPresenter>(Lifetime.Singleton);
             builder.RegisterEntryPoint<InGameFlow>(Lifetime.Singleton).WithParameter(_userActor);
@@ -28,6 +31,12 @@ namespace Game.Content.InGame
             builder.RegisterComponent(_camera);
             builder.RegisterComponent(_characterController);
             builder.RegisterComponent(_inGameMap);
+            
+            
+            builder.RegisterVitalRouter(routing =>
+            {
+                routing.Map<FarmWorkUseCase>();
+            });
         }
     }
 }

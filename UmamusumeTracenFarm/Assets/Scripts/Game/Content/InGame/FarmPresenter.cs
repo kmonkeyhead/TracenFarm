@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.Content.InGame.UseCase;
 using Game.Service.Farm;
 using R3;
 
@@ -8,13 +9,15 @@ namespace Game.Content.InGame
     {
         private readonly InGameMap _map;
         private readonly FarmService _farmService;
+        private readonly FarmWorkUseCase _farmWorkUseCase;
         private readonly IDisposable _disposable;
 
-        public FarmPresenter(InGameMap map, FarmService farmService)
+        public FarmPresenter(InGameMap map, FarmService farmService, FarmWorkUseCase farmWorkUseCase)
         {
             _map = map;
             _farmService = farmService;
-            _disposable = _farmService.OnFarmGrowComplete.Subscribe(OnFarmGrowComplete);
+            _farmWorkUseCase = farmWorkUseCase;
+            _disposable = _farmWorkUseCase.OnFarmGrowComplete.Subscribe(OnFarmGrowComplete);
         }
 
         private void OnFarmGrowComplete(FarmGrowCompleteMessage message)

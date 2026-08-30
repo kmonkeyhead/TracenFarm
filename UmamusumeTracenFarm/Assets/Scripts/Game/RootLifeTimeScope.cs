@@ -26,10 +26,6 @@ namespace Game
             {
                 container.Resolve<InputService>();
             });
-            builder.RegisterVitalRouter(routing =>
-            {
-                routing.Map<FarmService>();
-            });
         }
         
         private void RegisterService(IContainerBuilder builder)
