@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Game.Command;
 using Game.Content.InGame.Payload;
 using UnityEngine;
+using VitalRouter;
 
 namespace Game.Content.InGame.UseCase
 {
     public class PropsProgressService : IDisposable
     {
         private readonly FarmStore _farmStore;
+        private readonly ICommandPublisher _commandPublisher;
         private readonly CancellationTokenSource _cts = new();
 
-        public PropsProgressService(FarmStore farmStore)
+        public PropsProgressService(FarmStore farmStore, ICommandPublisher commandPublisher)
         {
             _farmStore = farmStore;
+            _commandPublisher = commandPublisher;
         }
 
         public void StartProgress() => UpdateProgressAsync(_cts.Token).Forget();
@@ -45,6 +49,8 @@ namespace Game.Content.InGame.UseCase
                         if (entry.WorkingProgress >= 1f)
                         {
                             entry.WorkingType = PropWorkingType.Complete;
+                            entry.WorkingProgress = 0f;
+                            _commandPublisher.PublishAsync(new PropWorkCompletedCommand(entry.Prop.PropType, entry.Id)).AsUniTask().Forget();
                         }
                     }
 

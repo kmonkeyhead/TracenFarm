@@ -32,12 +32,10 @@ namespace Game.Content.InGame.Props
         private readonly List<GameObject> _carrots = new List<GameObject>();
         public int Id => _propState.Id;
         private IPropState _propState;
-        public int Count => _carrots.Count;
-        public int ColumnCount => _columnCount;
-        public int RowCount => _columnCount > 0 ? _carrots.Count / _columnCount : 0;
         private bool _disposed;
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private IDisposable _disposable;
+        
 
         private void Awake()
         {
@@ -115,26 +113,6 @@ namespace Game.Content.InGame.Props
         {
             return IsValidIndex(index) && _carrots[index].activeSelf;
         }
-
-        public void SetAllCarrotsActive(bool active)
-        {
-            for (int i = 0; i < _carrots.Count; i++)
-            {
-                _carrots[i].SetActive(active);
-            }
-        }
-
-        public GameObject GetCarrot(int index)
-        {
-            return IsValidIndex(index) ? _carrots[index] : null;
-        }
-
-        /// <summary>줄과 칸 번호를 1차 리스트 인덱스로 바꾼다.</summary>
-        public int GetIndex(int row, int column)
-        {
-            return row * _columnCount + column;
-        }
-
         private bool IsValidIndex(int index)
         {
             if (index >= 0 && index < _carrots.Count)
@@ -146,7 +124,6 @@ namespace Game.Content.InGame.Props
             return false;
         }
 
-
         public bool CanInteract(Vector3 actorPosition)
         {
             Vector3 closestPoint = _interactionArea.ClosestPoint(actorPosition);
@@ -157,52 +134,19 @@ namespace Game.Content.InGame.Props
 
             return offset.sqrMagnitude <= _interactionRange * _interactionRange;
         }
-
-        public void StartInteract()
-        {
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = new CancellationTokenSource();
-            FillProgressAsync(_cts.Token).Forget();
-        }
-
-        public void StopInteract()
-        {
-            _cts?.Cancel();
-        }
-
         private int _testIndex = 0;
-
-        private async UniTaskVoid FillProgressAsync(CancellationToken ct)
-        {
-            float progress = 0;
-
-            try
-            {
-                while (true)
-                {
-                    ct.ThrowIfCancellationRequested();
-                    progress += Time.deltaTime;
-                    _progress.fillAmount = progress;
-                    await UniTask.Yield();
-
-                    if (progress >= 1f)
-                    {
-                        progress = 0f;
-                        SetCarrotActive(_testIndex, true);
-                        _testIndex++;
-                    }
-                }
-            }
-            finally
-            {
-                _progress.fillAmount = 0;
-            }
-        }
 
         private void FillProgress(float progress)
         {
             _progress.fillAmount = progress;
+        }
+
+        public void Grow(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                _carrots[i].SetActive(true);
+            }
         }
     }
 }

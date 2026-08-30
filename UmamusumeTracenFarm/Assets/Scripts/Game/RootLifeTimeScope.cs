@@ -7,6 +7,7 @@ using Game.UserData.Repository;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using VitalRouter.VContainer;
 
 namespace Game
 {
@@ -18,11 +19,16 @@ namespace Game
         {
             RegisterRepository(builder);
             RegisterService(builder);
+            
 
             builder.Register<InputService>(Lifetime.Singleton).AsSelf();
             builder.RegisterBuildCallback(container =>
             {
                 container.Resolve<InputService>();
+            });
+            builder.RegisterVitalRouter(routing =>
+            {
+                routing.Map<FarmService>();
             });
         }
         
