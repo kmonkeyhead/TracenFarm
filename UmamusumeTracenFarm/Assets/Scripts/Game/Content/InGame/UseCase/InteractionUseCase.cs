@@ -1,4 +1,5 @@
-﻿using Game.Content.InGame.Payload;
+﻿using System;
+using Game.Content.InGame.Payload;
 using Game.Content.InGame.Props;
 using Game.Service.Gesture;
 using UnityEngine;
@@ -34,34 +35,69 @@ namespace Game.Content.InGame.UseCase
                     return;
                 }
 
-
-                _interact = true;
-
                 if (targetObject.TryGetComponent<IProp>(out var prop))
                 {
                     if (prop.CanInteract(_actorStore.MyActor.Position))
                     {
-                        CheckAndInteract(prop);
+                        CheckAndInteract(prop, TimeSpan.Zero);
                     }
                 }
             }
-            else if (holdGesturePayload.GestureType == HoldGestureType.End)
+            else if (holdGesturePayload.GestureType == HoldGestureType.Hold)
             {
-                if (!_interact)
+                if (_interact || _lastProp == null)
                 {
                     return;
                 }
 
+                CheckAndInteract(_lastProp, holdGesturePayload.HoldingTime);
+            }
+            else if (holdGesturePayload.GestureType == HoldGestureType.End)
+            {
+                if (_lastProp == null)
+                {
+                    return;
+                }
+
+                if (_interact)
+                {
+                    // Hold가 실제로 시작됐다.
+                    StopInteract(_lastProp);
+                }
+                else if (_lastProp is IClickGestureReceiver)
+                {
+                    // TODO: Click 상호작용 구현
+                }
+
                 _interact = false;
-                StopInteract(_lastProp);
                 _lastProp = null;
             }
         }
 
-        private void CheckAndInteract(IProp prop)
+        private void CheckAndInteract(IProp prop, TimeSpan holdingTime)
         {
-            var entry = _farmStore.Get(prop.Id);
+            var clickReceiver = prop as IClickGestureReceiver;
+            var holdReceiver = prop as IHoldGestureReceiver;
+
+            if (clickReceiver == null && holdReceiver == null)
+            {
+                return;
+            }
+
             _lastProp = prop;
+
+            if (holdReceiver == null)
+            {
+                return;
+            }
+
+            if (holdingTime < holdReceiver.StartHoldTime)
+            {
+                return;
+            }
+
+            var entry = _farmStore.Get(prop.Id);
+            _interact = true;
             _farmWorkUseCase.StartInteracting(entry.Id, _actorStore.MyActor.Id);
         }
 

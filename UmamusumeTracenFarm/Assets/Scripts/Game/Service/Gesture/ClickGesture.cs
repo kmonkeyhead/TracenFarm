@@ -23,6 +23,7 @@ namespace Game.Service.Gesture
         public Observable<HoldGesturePayload> HoldGesture => _holdGestureSubject;
 
         private CancellationTokenSource _cts = new();
+        private TimeSpan _holdingTime;
 
         public ClickGesture(InputService inputService)
         {
@@ -64,7 +65,8 @@ namespace Game.Service.Gesture
                                 _pressed = true;
                                 _lastInputTime = DateTime.Now;
                                 //홀드 시작
-                                _holdGestureSubject.OnNext(new HoldGesturePayload(HoldGestureType.Start, input.ScreenPosition));
+                                _holdingTime = TimeSpan.Zero;
+                                _holdGestureSubject.OnNext(new HoldGesturePayload(HoldGestureType.Start, input.ScreenPosition, _holdingTime));
                             }
                         }
                         else
@@ -74,7 +76,8 @@ namespace Game.Service.Gesture
                             {
                                 _pressed = false;
                                 _lastInputPosition = input.ScreenPosition;
-                                _holdGestureSubject.OnNext(new HoldGesturePayload(HoldGestureType.End, input.ScreenPosition));
+                                _holdingTime = DateTime.Now - _lastInputTime;
+                                _holdGestureSubject.OnNext(new HoldGesturePayload(HoldGestureType.End, input.ScreenPosition, _holdingTime));
                             }
                         }
                     }
@@ -82,7 +85,8 @@ namespace Game.Service.Gesture
                     if (_pressed)
                     {
                         //홀드 중
-                        _holdGestureSubject.OnNext(new HoldGesturePayload(HoldGestureType.Hold, _lastInputPosition));
+                        _holdingTime = DateTime.Now - _lastInputTime;
+                        _holdGestureSubject.OnNext(new HoldGesturePayload(HoldGestureType.Hold, _lastInputPosition, _holdingTime));
                     }
 
                     await UniTask.Yield(ct);
@@ -127,5 +131,5 @@ namespace Game.Service.Gesture
 
     public record ClickGesturePayload(Vector2 Position);
 
-    public record HoldGesturePayload(HoldGestureType GestureType,  Vector2 Position);
+    public record HoldGesturePayload(HoldGestureType GestureType,  Vector2 Position, TimeSpan HoldingTime);
 }

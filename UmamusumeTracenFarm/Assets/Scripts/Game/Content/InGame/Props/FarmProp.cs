@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Content.InGame.Payload;
+using Game.Service.Gesture;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,7 @@ namespace Game.Content.InGame.Props
     /// 밭의 심는 자리마다 당근을 미리 만들어 두고 인덱스로 켜고 끈다.
     /// 수확과 재배치 때마다 Instantiate/Destroy하지 않고 활성 상태만 바꾼다.
     /// </summary>
-    public class FarmProp : MonoBehaviour, IProp, IDisposable
+    public class FarmProp : MonoBehaviour, IProp, IHoldGestureReceiver, IClickGestureReceiver, IDisposable
     {
         [SerializeField] private Image _progress;
         [SerializeField] private Collider _interactionArea;
@@ -29,6 +30,7 @@ namespace Game.Content.InGame.Props
 
         [SerializeField] private bool _activeOnStart = true;
         public PropType PropType => PropType.Farm;
+        public TimeSpan StartHoldTime => TimeSpan.FromSeconds(0.5f);
         private readonly List<GameObject> _carrots = new List<GameObject>();
         public int Id => _propState.Id;
         private IPropState _propState;
@@ -148,5 +150,7 @@ namespace Game.Content.InGame.Props
                 _carrots[i].SetActive(true);
             }
         }
+
+        
     }
 }
