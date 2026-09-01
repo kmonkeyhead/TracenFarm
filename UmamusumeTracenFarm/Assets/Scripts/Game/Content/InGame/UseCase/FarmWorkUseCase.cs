@@ -15,6 +15,7 @@ namespace Game.Content.InGame.UseCase
         private readonly FarmStore _farmStore;
 
         public Subject<FarmGrowCompleteMessage> OnFarmGrowComplete { get; } = new Subject<FarmGrowCompleteMessage>();
+        public Subject<FarmHarvestMessage> OnFarmHarvest { get; } = new Subject<FarmHarvestMessage>();
 
         public FarmWorkUseCase(FarmService farmService, FarmStore farmStore, ICommandPublisher commandPublisher)
         {
@@ -30,12 +31,20 @@ namespace Game.Content.InGame.UseCase
                 return;
             }
 
-            if(!_farmService.CheckStorageSpace(farmId))
+            if (!_farmService.CheckStorageSpace(farmId))
             {
                 return;
             }
-            
+
             farm.WorkingCount++;
+        }
+
+        public void Harvest(int farmId, ActorId actorId)
+        {
+            if (_farmService.HarvestVegetable(farmId))
+            {
+                OnFarmHarvest.OnNext(new FarmHarvestMessage(farmId));
+            }
         }
 
         public void StopInteracting(int farmId, ActorId actorId)

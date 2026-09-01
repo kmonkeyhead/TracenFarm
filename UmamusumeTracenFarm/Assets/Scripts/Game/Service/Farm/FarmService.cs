@@ -4,9 +4,10 @@ using Game.UserData.Model;
 using Game.UserData.Repository;
 using ObservableCollections;
 using R3;
+
 namespace Game.Service.Farm
 {
-    public  class FarmService : IDisposable
+    public class FarmService : IDisposable
     {
         private const int FarmCount = 1;
         private const int MaxFarmValue = 15;
@@ -25,14 +26,14 @@ namespace Game.Service.Farm
 
         public void Initialize()
         {
-            for(int i = 0 ; i < FarmCount ; i++)
+            for (int i = 0; i < FarmCount; i++)
             {
                 var model = new FarmModel(i + 1, 0);
-                
+
                 _farmRepository.AddOrReplace(model);
             }
         }
-        
+
         public int GetVegetableCount(int farmId)
         {
             var model = _farmRepository.Models.First(x => x.Id == farmId);
@@ -45,6 +46,20 @@ namespace Game.Service.Farm
             return MaxFarmValue - model.Value > 0;
         }
 
+        public bool HarvestVegetable(int farmId)
+        {
+            var model = _farmRepository.Models.First(x => x.Id == farmId);
+
+            if (model.Value <= 0)
+            {
+                return false;
+            }
+
+            model = model with { Value = model.Value - 1 };
+            _farmRepository.AddOrReplace(model);
+            return true;
+        }
+
         public bool GrowFarm(int farmId)
         {
             var model = _farmRepository.Models.First(x => x.Id == farmId);
@@ -55,23 +70,26 @@ namespace Game.Service.Farm
                 _farmRepository.AddOrReplace(model);
                 return true;
             }
+
             return false;
         }
 
         private void OnFarmRepositoryChanged(in NotifyCollectionChangedEventArgs<FarmModel> e)
         {
-            if(e.NewItem != null)
+            if (e.NewItem != null)
             {
                 //언제나 갱신 된다는 가정하에 처리한다
             }
         }
-     
+
 
         public void Dispose()
         {
             _disposable?.Dispose();
         }
     }
-    
+
     public record FarmGrowCompleteMessage(int FarmId);
+
+    public record FarmHarvestMessage(int FarmId);
 }

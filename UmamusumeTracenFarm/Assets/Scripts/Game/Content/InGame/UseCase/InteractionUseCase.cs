@@ -66,7 +66,7 @@ namespace Game.Content.InGame.UseCase
                 }
                 else if (_lastProp is IClickGestureReceiver)
                 {
-                    // TODO: Click 상호작용 구현
+                    ClickInteract(_lastProp);
                 }
 
                 _interact = false;
@@ -110,6 +110,17 @@ namespace Game.Content.InGame.UseCase
 
             var entry = _farmStore.Get(prop.Id);
             _farmWorkUseCase.StopInteracting(entry.Id, _actorStore.MyActor.Id);
+        }
+
+        private void ClickInteract(IProp prop)
+        {
+            if (prop == null)
+            {
+                return;
+            }
+
+            var entry = _farmStore.Get(prop.Id);
+            _farmWorkUseCase.Harvest(entry.Id, _actorStore.MyActor.Id);
         }
 
         private GameObject GetGameObject(Vector2 screenPosition)

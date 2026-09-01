@@ -17,7 +17,10 @@ namespace Game.Content.InGame
             _map = map;
             _farmService = farmService;
             _farmWorkUseCase = farmWorkUseCase;
-            _disposable = _farmWorkUseCase.OnFarmGrowComplete.Subscribe(OnFarmGrowComplete);
+            var builder = Disposable.CreateBuilder();
+            builder.Add(_farmWorkUseCase.OnFarmGrowComplete.Subscribe(OnFarmGrowComplete));
+            builder.Add(_farmWorkUseCase.OnFarmHarvest.Subscribe(OnFarmHarvest));
+            _disposable = builder.Build();
         }
 
         private void OnFarmGrowComplete(FarmGrowCompleteMessage message)
@@ -25,6 +28,12 @@ namespace Game.Content.InGame
             // Handle the farm grow complete event
             int count = _farmService.GetVegetableCount(message.FarmId);
             _map.GrowFarm(message.FarmId, count);
+        }
+
+        private void OnFarmHarvest(FarmHarvestMessage message)
+        {
+            int count = _farmService.GetVegetableCount(message.FarmId);
+            _map.HarvestFarm(message.FarmId, count);
         }
 
         public void Dispose()

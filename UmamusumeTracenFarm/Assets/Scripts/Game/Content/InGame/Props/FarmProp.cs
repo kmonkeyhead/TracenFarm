@@ -37,7 +37,7 @@ namespace Game.Content.InGame.Props
         private bool _disposed;
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private IDisposable _disposable;
-        
+
 
         private void Awake()
         {
@@ -115,6 +115,7 @@ namespace Game.Content.InGame.Props
         {
             return IsValidIndex(index) && _carrots[index].activeSelf;
         }
+
         private bool IsValidIndex(int index)
         {
             if (index >= 0 && index < _carrots.Count)
@@ -136,6 +137,7 @@ namespace Game.Content.InGame.Props
 
             return offset.sqrMagnitude <= _interactionRange * _interactionRange;
         }
+
         private int _testIndex = 0;
 
         private void FillProgress(float progress)
@@ -151,6 +153,13 @@ namespace Game.Content.InGame.Props
             }
         }
 
-        
+
+        public void Harvest(int remainingCount)
+        {
+            for (int i = 0; i < _carrots.Count; i++)
+            {
+                _carrots[i].SetActive(remainingCount > i);
+            }
+        }
     }
 }
