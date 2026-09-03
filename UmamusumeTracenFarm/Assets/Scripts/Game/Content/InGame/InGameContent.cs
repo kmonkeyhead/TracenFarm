@@ -25,7 +25,6 @@ namespace Game.Content.InGame
             builder.Register<ClickGesture>(Lifetime.Singleton);
             builder.Register<FarmWorkUseCase>(Lifetime.Singleton);
             builder.Register<InteractionUseCase>(Lifetime.Singleton);
-            builder.Register<FarmPresenter>(Lifetime.Singleton);
             builder.RegisterEntryPoint<InGameFlow>(Lifetime.Singleton).WithParameter(_userActor);
 
             builder.RegisterComponent(_camera);

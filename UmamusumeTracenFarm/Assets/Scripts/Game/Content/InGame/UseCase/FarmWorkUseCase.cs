@@ -8,19 +8,22 @@ using VitalRouter;
 
 namespace Game.Content.InGame.UseCase
 {
+    //로직과 뷰 상태까지 같이 처리한다.
     [Routes]
     public partial class FarmWorkUseCase
     {
         private readonly FarmService _farmService;
         private readonly FarmStore _farmStore;
+        private readonly InGameMap _inGameMap;
 
         public Subject<FarmGrowCompleteMessage> OnFarmGrowComplete { get; } = new Subject<FarmGrowCompleteMessage>();
         public Subject<FarmHarvestMessage> OnFarmHarvest { get; } = new Subject<FarmHarvestMessage>();
 
-        public FarmWorkUseCase(FarmService farmService, FarmStore farmStore, ICommandPublisher commandPublisher)
+        public FarmWorkUseCase(FarmService farmService, FarmStore farmStore, InGameMap inGameMap, ICommandPublisher commandPublisher)
         {
             _farmService = farmService;
             _farmStore = farmStore;
+            _inGameMap = inGameMap;
         }
 
         public void StartInteracting(int farmId, ActorId actorId)
@@ -41,9 +44,11 @@ namespace Game.Content.InGame.UseCase
 
         public void Harvest(int farmId, ActorId actorId)
         {
+            //현재 라우터 필요 없다
             if (_farmService.HarvestVegetable(farmId))
             {
-                OnFarmHarvest.OnNext(new FarmHarvestMessage(farmId));
+                _inGameMap.HarvestFarm(farmId, _farmService.GetVegetableCount(farmId)); 
+                //OnFarmHarvest.OnNext(new FarmHarvestMessage(farmId));
             }
         }
 
@@ -81,7 +86,9 @@ namespace Game.Content.InGame.UseCase
                 return;
             }
 
-            OnFarmGrowComplete.OnNext(new FarmGrowCompleteMessage(command.PropId));
+            _inGameMap.GrowFarm(command.PropId, _farmService.GetVegetableCount(command.PropId));
+            //현재 라우터가 필요 없다.
+            //OnFarmGrowComplete.OnNext(new FarmGrowCompleteMessage(command.PropId)); 
 
             bool available = _farmService.CheckStorageSpace(command.PropId);
             if (available)

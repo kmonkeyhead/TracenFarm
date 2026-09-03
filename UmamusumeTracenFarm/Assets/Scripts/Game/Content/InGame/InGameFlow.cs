@@ -14,18 +14,15 @@ namespace Game.Content.InGame
         private readonly FarmStore _farmStore;
         private readonly InGameMap _inGameMap;
         private readonly PropsProgressService _progressService;
-        private readonly FarmPresenter _farmPresenter;
         private readonly IDisposable _disposable;
 
-        public InGameFlow(ClickGesture clickGesture, InteractionUseCase interactionUseCase, ActorStore actorStore, FarmStore farmStore, Actor userActor, InGameMap inGameMap, PropsProgressService progressService,
-            FarmPresenter farmPresenter)
+        public InGameFlow(ClickGesture clickGesture, InteractionUseCase interactionUseCase, ActorStore actorStore, FarmStore farmStore, Actor userActor, InGameMap inGameMap, PropsProgressService progressService)
         {
             //userActor는 현재 임시다 - actor 생성기가 있어야 한다
             _interactionUseCase = interactionUseCase;
             _farmStore = farmStore;
             _inGameMap = inGameMap;
             _progressService = progressService;
-            _farmPresenter = farmPresenter;
             var builder = Disposable.CreateBuilder();
             builder.Add(clickGesture.HoldGesture.Subscribe(OnHoldGesture));
             _disposable = builder.Build();
