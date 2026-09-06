@@ -2,7 +2,7 @@
 
 namespace Game.UserData.Model
 {
-    public record FarmModel(int Id) : IModel
+    public record VegetableModel(string UniqueId, int FarmId, DateTime StartAt, DateTime EndAt) : IModel
     {
         public DateTime UpdateAt { get; } = DateTime.Now;
     }

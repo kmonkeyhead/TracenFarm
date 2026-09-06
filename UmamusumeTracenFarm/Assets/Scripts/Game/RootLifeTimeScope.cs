@@ -7,27 +7,23 @@ using Game.UserData.Repository;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
-using VitalRouter.VContainer;
 
 namespace Game
 {
     public sealed class RootLifeTimeScope : LifetimeScope
     {
         [SerializeField] private BootContent _bootContent;
-  
+
         protected override void Configure(IContainerBuilder builder)
         {
             RegisterRepository(builder);
             RegisterService(builder);
-            
+
 
             builder.Register<InputService>(Lifetime.Singleton).AsSelf();
-            builder.RegisterBuildCallback(container =>
-            {
-                container.Resolve<InputService>();
-            });
+            builder.RegisterBuildCallback(container => { container.Resolve<InputService>(); });
         }
-        
+
         private void RegisterService(IContainerBuilder builder)
         {
             builder.Register<BootService>(Lifetime.Singleton);
@@ -37,8 +33,9 @@ namespace Game
         private void RegisterRepository(IContainerBuilder builder)
         {
             builder.Register<FarmRepository>(Lifetime.Singleton);
+            builder.Register<VegetableRepository>(Lifetime.Singleton);
         }
-        
+
         protected override void Awake()
         {
             base.Awake();
