@@ -1,20 +1,21 @@
-﻿using System;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Command;
 using Game.Content.InGame.Payload;
+using Game.Content.InGame.Store;
 using UnityEngine;
 using VitalRouter;
 
 namespace Game.Content.InGame.UseCase
 {
-    public class PropsProgressService : IDisposable
+    public class FarmProgressService : IDisposable
     {
         private readonly FarmStore _farmStore;
         private readonly ICommandPublisher _commandPublisher;
         private readonly CancellationTokenSource _cts = new();
 
-        public PropsProgressService(FarmStore farmStore, ICommandPublisher commandPublisher)
+        public FarmProgressService(FarmStore farmStore, ICommandPublisher commandPublisher)
         {
             _farmStore = farmStore;
             _commandPublisher = commandPublisher;
@@ -50,7 +51,7 @@ namespace Game.Content.InGame.UseCase
                         {
                             entry.WorkingType = PropWorkingType.Complete;
                             entry.WorkingProgress = 0f;
-                            _commandPublisher.PublishAsync(new PropWorkCompletedCommand(entry.Prop.PropType, entry.Id)).AsUniTask().Forget();
+                            _commandPublisher.PublishAsync(new PropWorkCompletedCommand(entry.Farm.PropType, entry.Id)).AsUniTask().Forget();
                         }
                     }
 

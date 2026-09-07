@@ -1,35 +1,37 @@
 ﻿using System.Collections.Generic;
-using Game.Content.InGame.Props;
+using Game.Content.InGame.Farms;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Content.InGame
 {
     public class InGameMap : MonoBehaviour
     {
         [SerializeField] private List<Transform> _farmLocations;
-        [SerializeField] private FarmProp _farmProp;
+        [FormerlySerializedAs("_farmProp")]
+        [SerializeField] private FarmView _farmView;
 
-        public FarmProp FarmProp => _farmProp;
+        public FarmView FarmView => _farmView;
 
         public void GrowFarm(int farmId, int count)
         {
             //TODO : 실제로는 farmId와 매칭되는걸 가져와야 한다.
-            if (_farmProp.Id != farmId)
+            if (_farmView.Id != farmId)
             {
                 return;
             }
 
-            _farmProp.Grow(count);
+            _farmView.Grow(count);
         }
 
         public void HarvestFarm(int farmId, int count)
         {
-            if (_farmProp.Id != farmId)
+            if (_farmView.Id != farmId)
             {
                 return;
             }
 
-            _farmProp.Harvest(count);
+            _farmView.Harvest(count);
         }
     }
 }

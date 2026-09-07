@@ -1,6 +1,7 @@
 ﻿using System;
 using Game.Character;
 using Game.Content.InGame.Payload;
+using Game.Content.InGame.Store;
 using Game.Content.InGame.UseCase;
 using Game.Service.Gesture;
 using R3;
@@ -13,10 +14,10 @@ namespace Game.Content.InGame
         private readonly InteractionUseCase _interactionUseCase;
         private readonly FarmStore _farmStore;
         private readonly InGameMap _inGameMap;
-        private readonly PropsProgressService _progressService;
+        private readonly FarmProgressService _progressService;
         private readonly IDisposable _disposable;
 
-        public InGameFlow(ClickGesture clickGesture, InteractionUseCase interactionUseCase, ActorStore actorStore, FarmStore farmStore, Actor userActor, InGameMap inGameMap, PropsProgressService progressService)
+        public InGameFlow(ClickGesture clickGesture, InteractionUseCase interactionUseCase, ActorStore actorStore, FarmStore farmStore, Actor userActor, InGameMap inGameMap, FarmProgressService progressService)
         {
             //userActor는 현재 임시다 - actor 생성기가 있어야 한다
             _interactionUseCase = interactionUseCase;
@@ -50,9 +51,9 @@ namespace Game.Content.InGame
         private void CreateMap()
         {
             //원래는 생성 후 맵에 넣어야 하지만 현재 생성 기능이 없다
-            var prop = _inGameMap.FarmProp;
-            var farmPayload = new PropState(1, 0, 0);
-            _farmStore.Register(farmPayload, prop);
+            var farm = _inGameMap.FarmView;
+            var farmPayload = new FarmWorkState(1, 0, 0);
+            _farmStore.Register(farmPayload, farm);
         }
     }
 }

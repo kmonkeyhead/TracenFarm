@@ -1,4 +1,4 @@
-﻿using Game.Content.InGame.Props;
+﻿using Game.Content.InGame.Farms;
 using VitalRouter;
 
 namespace Game.Command

@@ -1,8 +1,8 @@
-﻿using Game.Content.InGame.Props;
+﻿using Game.Content.InGame.Payload;
 
-namespace Game.Content.InGame.Payload
+namespace Game.Content.InGame.Farms
 {
-    public record PropEntry(IPropState Payload, IProp Prop)
+    public record FarmEntry(IFarmWorkState Payload, IFarm Farm)
     {
         public int Id => Payload.Id;
         public int WorkingCount

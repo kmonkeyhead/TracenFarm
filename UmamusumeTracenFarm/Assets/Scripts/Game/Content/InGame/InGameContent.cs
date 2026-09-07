@@ -1,4 +1,5 @@
 ﻿using Game.Character;
+using Game.Content.InGame.Store;
 using Game.Content.InGame.UseCase;
 using Game.Service.Farm;
 using VContainer;
@@ -19,7 +20,7 @@ namespace Game.Content.InGame
         protected override void Configure(IContainerBuilder builder)
         {
             base.Configure(builder);
-            builder.Register<PropsProgressService>(Lifetime.Singleton);
+            builder.Register<FarmProgressService>(Lifetime.Singleton);
             builder.Register<FarmStore>(Lifetime.Singleton);
             builder.Register<ActorStore>(Lifetime.Singleton);
             builder.Register<ClickGesture>(Lifetime.Singleton);

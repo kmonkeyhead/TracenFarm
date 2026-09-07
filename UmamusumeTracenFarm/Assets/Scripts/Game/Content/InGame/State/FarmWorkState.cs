@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace Game.Content.InGame.Payload
 {
-    public class PropState : IPropState
+    public class FarmWorkState : IFarmWorkState
     {
         public int Id { get; }
         public int WorkingCount { get; set; }
         public ReactiveProperty<float> WorkingProgress { get; }
         public PropWorkingType WorkingType { get; set; }
 
-        public PropState(int id, int workingCount, float workingProgress)
+        public FarmWorkState(int id, int workingCount, float workingProgress)
         {
             Id = id;
             WorkingCount = workingCount;

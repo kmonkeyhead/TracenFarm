@@ -1,6 +1,7 @@
 ﻿using System;
 using Game.Content.InGame.Payload;
-using Game.Content.InGame.Props;
+using Game.Content.InGame.Interaction;
+using Game.Content.InGame.Store;
 using Game.Service.Gesture;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Game.Content.InGame.UseCase
         private readonly Camera _camera;
         private readonly ActorStore _actorStore;
         private bool _interact;
-        private IProp _lastProp;
+        private IInteractable _lastInteractable;
         private readonly FarmStore _farmStore;
         private readonly FarmWorkUseCase _farmWorkUseCase;
 
@@ -35,26 +36,26 @@ namespace Game.Content.InGame.UseCase
                     return;
                 }
 
-                if (targetObject.TryGetComponent<IProp>(out var prop))
+                if (targetObject.TryGetComponent<IInteractable>(out var interactable))
                 {
-                    if (prop.CanInteract(_actorStore.MyActor.Position))
+                    if (interactable.CanInteract(_actorStore.MyActor.Position))
                     {
-                        CheckAndInteract(prop, TimeSpan.Zero);
+                        CheckAndInteract(interactable, TimeSpan.Zero);
                     }
                 }
             }
             else if (holdGesturePayload.GestureType == HoldGestureType.Hold)
             {
-                if (_interact || _lastProp == null)
+                if (_interact || _lastInteractable == null)
                 {
                     return;
                 }
 
-                CheckAndInteract(_lastProp, holdGesturePayload.HoldingTime);
+                CheckAndInteract(_lastInteractable, holdGesturePayload.HoldingTime);
             }
             else if (holdGesturePayload.GestureType == HoldGestureType.End)
             {
-                if (_lastProp == null)
+                if (_lastInteractable == null)
                 {
                     return;
                 }
@@ -62,29 +63,29 @@ namespace Game.Content.InGame.UseCase
                 if (_interact)
                 {
                     // Hold가 실제로 시작됐다.
-                    StopInteract(_lastProp);
+                    StopInteract(_lastInteractable);
                 }
-                else if (_lastProp is IClickGestureReceiver)
+                else if (_lastInteractable is IClickGestureReceiver)
                 {
-                    ClickInteract(_lastProp);
+                    ClickInteract(_lastInteractable);
                 }
 
                 _interact = false;
-                _lastProp = null;
+                _lastInteractable = null;
             }
         }
 
-        private void CheckAndInteract(IProp prop, TimeSpan holdingTime)
+        private void CheckAndInteract(IInteractable interactable, TimeSpan holdingTime)
         {
-            var clickReceiver = prop as IClickGestureReceiver;
-            var holdReceiver = prop as IHoldGestureReceiver;
+            var clickReceiver = interactable as IClickGestureReceiver;
+            var holdReceiver = interactable as IHoldGestureReceiver;
 
             if (clickReceiver == null && holdReceiver == null)
             {
                 return;
             }
 
-            _lastProp = prop;
+            _lastInteractable = interactable;
 
             if (holdReceiver == null)
             {
@@ -96,30 +97,30 @@ namespace Game.Content.InGame.UseCase
                 return;
             }
 
-            var entry = _farmStore.Get(prop.Id);
+            var entry = _farmStore.Get(interactable.Id);
             _interact = true;
             _farmWorkUseCase.StartInteracting(entry.Id, _actorStore.MyActor.Id);
         }
 
-        private void StopInteract(IProp prop)
+        private void StopInteract(IInteractable interactable)
         {
-            if (prop == null)
+            if (interactable == null)
             {
                 return;
             }
 
-            var entry = _farmStore.Get(prop.Id);
+            var entry = _farmStore.Get(interactable.Id);
             _farmWorkUseCase.StopInteracting(entry.Id, _actorStore.MyActor.Id);
         }
 
-        private void ClickInteract(IProp prop)
+        private void ClickInteract(IInteractable interactable)
         {
-            if (prop == null)
+            if (interactable == null)
             {
                 return;
             }
 
-            var entry = _farmStore.Get(prop.Id);
+            var entry = _farmStore.Get(interactable.Id);
             _farmWorkUseCase.Harvest(entry.Id, _actorStore.MyActor.Id);
         }
 

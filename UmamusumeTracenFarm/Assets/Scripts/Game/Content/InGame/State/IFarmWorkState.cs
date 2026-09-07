@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Content.InGame.Payload
 {
-    public interface IPropState
+    public interface IFarmWorkState
     {
         int Id { get; }
         int WorkingCount { get; set; }

@@ -1,7 +1,8 @@
 ﻿using DataType;
 using Game.Command;
 using Game.Content.InGame.Payload;
-using Game.Content.InGame.Props;
+using Game.Content.InGame.Farms;
+using Game.Content.InGame.Store;
 using Game.Service.Farm;
 using R3;
 using VitalRouter;

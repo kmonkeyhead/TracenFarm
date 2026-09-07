@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DataType;
 using Game.Character;
 
-namespace Game.Content.InGame
+namespace Game.Content.InGame.Store
 {
     public class ActorStore : IActorStore
     {
