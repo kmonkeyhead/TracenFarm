@@ -1,4 +1,5 @@
 ﻿using System;
+using DataType;
 using Game.Content.InGame.Payload;
 using Game.Content.InGame.Interaction;
 using Game.Content.InGame.Store;
@@ -97,7 +98,7 @@ namespace Game.Content.InGame.UseCase
                 return;
             }
 
-            var entry = _farmStore.Get(interactable.Id);
+            var entry = _farmStore.Get((FarmId)interactable.Id);
             _interact = true;
             _farmWorkUseCase.StartInteracting(entry.Id, _actorStore.MyActor.Id);
         }
@@ -109,7 +110,7 @@ namespace Game.Content.InGame.UseCase
                 return;
             }
 
-            var entry = _farmStore.Get(interactable.Id);
+            var entry = _farmStore.Get((FarmId)interactable.Id);
             _farmWorkUseCase.StopInteracting(entry.Id, _actorStore.MyActor.Id);
         }
 
@@ -120,8 +121,8 @@ namespace Game.Content.InGame.UseCase
                 return;
             }
 
-            var entry = _farmStore.Get(interactable.Id);
-            _farmWorkUseCase.Harvest(entry.Id, _actorStore.MyActor.Id);
+            var entry = _farmStore.Get((FarmId)interactable.Id);
+            _farmWorkUseCase.Harvest((FarmId)entry.Id, _actorStore.MyActor.Id);
         }
 
         private GameObject GetGameObject(Vector2 screenPosition)

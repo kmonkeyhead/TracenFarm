@@ -27,7 +27,7 @@ namespace Game.Content.InGame.UseCase
             _inGameMap = inGameMap;
         }
 
-        public void StartInteracting(int farmId, ActorId actorId)
+        public void StartInteracting(FarmId farmId, ActorId actorId)
         {
             var farm = _farmStore.Get(farmId);
             if (farm == null)
@@ -43,17 +43,18 @@ namespace Game.Content.InGame.UseCase
             farm.WorkingCount++;
         }
 
-        public void Harvest(int farmId, ActorId actorId)
+        public void Harvest(FarmId farmId, ActorId actorId)
         {
             //현재 라우터 필요 없다
-            if (_farmService.HarvestVegetable(farmId))
+            var result = _farmService.HarvestVegetable(farmId);
+            if (result.Available)
             {
-                _inGameMap.HarvestFarm(farmId, _farmService.GetVegetableCount(farmId)); 
+                _inGameMap.HarvestFarm(farmId, result.Vegetable); 
                 //OnFarmHarvest.OnNext(new FarmHarvestMessage(farmId));
             }
         }
 
-        public void StopInteracting(int farmId, ActorId actorId)
+        public void StopInteracting(FarmId farmId, ActorId actorId)
         {
             //TODO : WorkingCount가 아닌 ActorId를 가지고 있어야 한다
             var farm = _farmStore.Get(farmId);
@@ -71,27 +72,28 @@ namespace Game.Content.InGame.UseCase
         }
 
         [Route]
-        public void OnPropComplete(PropWorkCompletedCommand command)
+        public void OnPropComplete(FarmWorkCompletedCommand command)
         {
             if (command.PropType != PropType.Farm)
             {
                 return;
             }
 
-            var entry = _farmStore.Get(command.PropId);
+            var entry = _farmStore.Get(command.FarmId);
             entry.WorkingProgress = 0f;
-            if (!_farmService.GrowFarm(command.PropId))
+            var result = _farmService.GrowFarm(command.FarmId);
+            if (!result.Available)
             {
                 entry.WorkingType = PropWorkingType.None;
                 entry.WorkingCount = 0;
                 return;
             }
 
-            _inGameMap.GrowFarm(command.PropId, _farmService.GetVegetableCount(command.PropId));
+            _inGameMap.GrowFarm(command.FarmId, result.Vegetable);
             //현재 라우터가 필요 없다.
             //OnFarmGrowComplete.OnNext(new FarmGrowCompleteMessage(command.PropId)); 
 
-            bool available = _farmService.CheckStorageSpace(command.PropId);
+            bool available = _farmService.CheckStorageSpace(command.FarmId);
             if (available)
             {
                 entry.WorkingType = PropWorkingType.Working;

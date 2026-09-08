@@ -51,7 +51,7 @@ namespace Game.Content.InGame.UseCase
                         {
                             entry.WorkingType = PropWorkingType.Complete;
                             entry.WorkingProgress = 0f;
-                            _commandPublisher.PublishAsync(new PropWorkCompletedCommand(entry.Farm.PropType, entry.Id)).AsUniTask().Forget();
+                            _commandPublisher.PublishAsync(new FarmWorkCompletedCommand(entry.Farm.PropType, entry.Id)).AsUniTask().Forget();
                         }
                     }
 

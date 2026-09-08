@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Content.InGame.Payload;
 using Game.Service.Gesture;
+using Game.UserData.Model;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,8 +33,8 @@ namespace Game.Content.InGame.Farms
         [SerializeField] private bool _activeOnStart = true;
         public PropType PropType => PropType.Farm;
         public TimeSpan StartHoldTime => TimeSpan.FromSeconds(0.5f);
-        private readonly List<GameObject> _carrots = new List<GameObject>();
-        public int Id => _farmWorkState.Id;
+        private readonly List<VegetableView> _carrots = new List<VegetableView>();
+        public int Id => _farmWorkState.Id.AsPrimitive();
         private IFarmWorkState _farmWorkState;
         private bool _disposed;
         private CancellationTokenSource _cts = new CancellationTokenSource();
@@ -97,34 +99,8 @@ namespace Game.Content.InGame.Farms
                 carrot.transform.localRotation = Quaternion.identity;
                 carrot.SetActive(false);
 
-                _carrots.Add(carrot);
+                _carrots.Add(carrot.GetComponent<VegetableView>());
             }
-        }
-
-        public void SetCarrotActive(int index, bool active)
-        {
-            if (!IsValidIndex(index))
-            {
-                return;
-            }
-
-            _carrots[index].SetActive(active);
-        }
-
-        public bool IsCarrotActive(int index)
-        {
-            return IsValidIndex(index) && _carrots[index].activeSelf;
-        }
-
-        private bool IsValidIndex(int index)
-        {
-            if (index >= 0 && index < _carrots.Count)
-            {
-                return true;
-            }
-
-            Debug.LogWarning($"당근 인덱스 {index}가 범위를 벗어났습니다. (0 ~ {_carrots.Count - 1})", this);
-            return false;
         }
 
         public bool CanInteract(Vector3 actorPosition)
@@ -145,21 +121,17 @@ namespace Game.Content.InGame.Farms
             _progress.fillAmount = progress;
         }
 
-        public void Grow(int count)
+        public void Grow(VegetableModel model)
         {
-            for (int i = 0; i < count; i++)
-            {
-                _carrots[i].SetActive(true);
-            }
+            var view = _carrots.First(r => !r.gameObject.activeSelf);
+            view.StartGrow(model.StartAt, model.EndAt, model.UniqueId);
         }
 
 
-        public void Harvest(int remainingCount)
+        public void Harvest(VegetableModel model)
         {
-            for (int i = 0; i < _carrots.Count; i++)
-            {
-                _carrots[i].SetActive(remainingCount > i);
-            }
+            var view = _carrots.First(r => r.UniqueId == model.UniqueId);
+            view.gameObject.SetActive(false);
         }
     }
 }

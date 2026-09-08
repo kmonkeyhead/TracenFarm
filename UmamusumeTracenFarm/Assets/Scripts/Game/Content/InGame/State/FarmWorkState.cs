@@ -1,16 +1,17 @@
-﻿using R3;
-using UnityEngine;
+﻿using DataType;
+using Game.Content.InGame.Payload;
+using R3;
 
-namespace Game.Content.InGame.Payload
+namespace Game.Content.InGame.State
 {
     public class FarmWorkState : IFarmWorkState
     {
-        public int Id { get; }
+        public FarmId Id { get; }
         public int WorkingCount { get; set; }
         public ReactiveProperty<float> WorkingProgress { get; }
         public PropWorkingType WorkingType { get; set; }
 
-        public FarmWorkState(int id, int workingCount, float workingProgress)
+        public FarmWorkState(FarmId id, int workingCount, float workingProgress)
         {
             Id = id;
             WorkingCount = workingCount;

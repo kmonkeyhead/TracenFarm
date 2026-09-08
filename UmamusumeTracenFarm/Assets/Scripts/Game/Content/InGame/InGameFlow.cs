@@ -1,6 +1,8 @@
 ﻿using System;
+using DataType;
 using Game.Character;
 using Game.Content.InGame.Payload;
+using Game.Content.InGame.State;
 using Game.Content.InGame.Store;
 using Game.Content.InGame.UseCase;
 using Game.Service.Gesture;
@@ -52,7 +54,7 @@ namespace Game.Content.InGame
         {
             //원래는 생성 후 맵에 넣어야 하지만 현재 생성 기능이 없다
             var farm = _inGameMap.FarmView;
-            var farmPayload = new FarmWorkState(1, 0, 0);
+            var farmPayload = new FarmWorkState(new FarmId(1), 0, 0);
             _farmStore.Register(farmPayload, farm);
         }
     }

@@ -1,11 +1,12 @@
-﻿using R3;
+﻿using DataType;
+using R3;
 using UnityEngine;
 
 namespace Game.Content.InGame.Payload
 {
     public interface IFarmWorkState
     {
-        int Id { get; }
+        FarmId Id { get; }
         int WorkingCount { get; set; }
         ReactiveProperty<float> WorkingProgress { get; }
         PropWorkingType WorkingType { get; set; }

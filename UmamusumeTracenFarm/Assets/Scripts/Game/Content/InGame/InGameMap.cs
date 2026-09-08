@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using DataType;
 using Game.Content.InGame.Farms;
+using Game.UserData.Model;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,25 +15,25 @@ namespace Game.Content.InGame
 
         public FarmView FarmView => _farmView;
 
-        public void GrowFarm(int farmId, int count)
+        public void GrowFarm(FarmId farmId, VegetableModel vegetableModel)
         {
             //TODO : 실제로는 farmId와 매칭되는걸 가져와야 한다.
-            if (_farmView.Id != farmId)
+            if (_farmView.Id != farmId.AsPrimitive())
             {
                 return;
             }
-
-            _farmView.Grow(count);
+            
+            _farmView.Grow(vegetableModel);
         }
 
-        public void HarvestFarm(int farmId, int count)
+        public void HarvestFarm(FarmId farmId, VegetableModel vegetableModel)
         {
-            if (_farmView.Id != farmId)
+            if (_farmView.Id != farmId.AsPrimitive())
             {
                 return;
             }
 
-            _farmView.Harvest(count);
+            _farmView.Harvest(vegetableModel);
         }
     }
 }

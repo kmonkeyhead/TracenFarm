@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DataType;
 using Game.UserData.Model;
 using Game.UserData.Repository;
 using ObservableCollections;
@@ -36,42 +37,47 @@ namespace Game.Service.Farm
             }
         }
 
-        public int GetVegetableCount(int farmId)
+        public int GetVegetableCount(FarmId farmId)
         {
             return _vegetableRepository.Count(x => x.FarmId == farmId);
         }
 
-        public bool CheckStorageSpace(int farmId)
+        public VegetableModel GetAvailableVegetable(FarmId farmId)
+        {
+            return _vegetableRepository.FirstOrDefault(x => x.FarmId == farmId && x.EndAt > DateTime.Now);
+        }
+
+        public bool CheckStorageSpace(FarmId farmId)
         {
             var count = _vegetableRepository.Count(x => x.FarmId == farmId);
             return MaxFarmValue - count > 0;
         }
 
-        public bool HarvestVegetable(int farmId)
+        public (bool Available, VegetableModel Vegetable) HarvestVegetable(FarmId farmId)
         {
             var now = DateTime.Now;
             var vegetable = _vegetableRepository.FirstOrDefault(x => x.FarmId == farmId && x.EndAt <= now);
             if (vegetable == null)
             {
-                return false;
+                return (false, null);
             }
 
             _vegetableRepository.Remove(vegetable);
-            return true;
+            return (true, vegetable);
         }
 
-        public bool GrowFarm(int farmId)
+        public (bool Available, VegetableModel Vegetable) GrowFarm(FarmId farmId)
         {
             if (!CheckStorageSpace(farmId))
             {
-                return false;
+                return (false, null);
             }
 
             const float Duration = 2f;
             var vegetable = new VegetableModel(Guid.NewGuid().ToString(), farmId, DateTime.Now, DateTime.Now.AddSeconds(Duration));
             _vegetableRepository.AddOrReplace(vegetable);
 
-            return true;
+            return (true, vegetable);
         }
 
         private void OnFarmRepositoryChanged(in NotifyCollectionChangedEventArgs<FarmModel> e)
