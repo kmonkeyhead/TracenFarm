@@ -16,6 +16,7 @@
 
 ## 질문 유형별 목록
 
+- [게임 구성과 학습 순서](./categories/게임_구성과_학습_순서.md) — 밭 건설과 NPC 수확·운반 우선순위, NavMesh·Behavior Tree 적용 순서, NPCController→Actor 연결과 임시 이동·정지 구현, NPC별 판단·공통 상황 조회·상태 변경의 책임 분리
 - [학습 및 작업 운영](./categories/학습_및_작업_운영.md)
 - [애니메이션](./categories/애니메이션.md)
 - [렌더링과 머티리얼](./categories/렌더링과_머티리얼.md)

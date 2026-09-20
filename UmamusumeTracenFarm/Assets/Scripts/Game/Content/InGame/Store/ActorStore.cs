@@ -13,8 +13,7 @@ namespace Game.Content.InGame.Store
 
         public IActor MyActor => _actors.GetValueOrDefault(MyActorId);
 
-        public IReadOnlyCollection<IActor> All =>
-            _actors.Values;
+        public IReadOnlyCollection<IActor> All => _actors.Values;
 
         public void Register(IActor actor)
         {

@@ -7,5 +7,6 @@ namespace Game.Content.InGame.Interaction
     {
         int Id { get; }
         bool CanInteract(Vector3 position);
+        Vector3 GetInteractionPosition();
     }
 }

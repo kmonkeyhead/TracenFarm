@@ -47,6 +47,11 @@ namespace Game.Service.Farm
             return _vegetableRepository.FirstOrDefault(x => x.FarmId == farmId && x.EndAt > DateTime.Now);
         }
 
+        /// <summary>
+        /// 농장에 심을 야채가 있는지 확인한다. 최대치보다 적으면 true를 반환한다.
+        /// </summary>
+        /// <param name="farmId"></param>
+        /// <returns></returns>
         public bool CheckStorageSpace(FarmId farmId)
         {
             var count = _vegetableRepository.Count(x => x.FarmId == farmId);

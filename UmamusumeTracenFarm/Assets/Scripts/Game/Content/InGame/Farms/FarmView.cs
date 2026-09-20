@@ -114,6 +114,8 @@ namespace Game.Content.InGame.Farms
             return offset.sqrMagnitude <= _interactionRange * _interactionRange;
         }
 
+        public Vector3 GetInteractionPosition() => _interactionArea.ClosestPoint(transform.position);
+
         private int _testIndex = 0;
 
         private void FillProgress(float progress)
